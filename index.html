@@ -4,19 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>点击开启你的2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Sacramento&family=Parisienne&family=Allura&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         #startScreen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; 
-            z-index: 30; cursor: pointer;
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            display: flex; align-items: center; justify-content: center; 
+            z-index: 30; 
+            cursor: pointer;
         }
         #startText { 
             font-family: 'Great Vibes', cursive;
             font-size: 4.5rem; 
+            color: #fff;
+            text-align: center;
             background: linear-gradient(45deg, #ffd700, #ff6bcb, #48dbfb, #ff9ff3);
             background-size: 400% 400%;
             -webkit-background-clip: text;
@@ -26,23 +31,56 @@
             text-shadow: 0 0 40px rgba(255,215,0,0.8);
             user-select: none;
         }
-        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes glowPulse { from { text-shadow: 0 0 40px rgba(255,215,0,0.8); } to { text-shadow: 0 0 80px rgba(255,215,0,1); } }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes glowPulse {
+            from { text-shadow: 0 0 40px rgba(255,215,0,0.8), 0 0 60px rgba(255,107,203,0.6); }
+            to { text-shadow: 0 0 60px rgba(255,215,0,1), 0 0 100px rgba(255,107,203,0.8); }
+        }
         #mainText { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            font-size: 3rem; font-weight: 900; text-shadow: 0 0 80px #ff6bcb; opacity: 0; z-index: 20; pointer-events: none; 
-            animation: pulse 3s infinite alternate;
+            position: fixed; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-size: 3rem; 
+            font-weight: 900;
+            text-shadow: 0 0 40px #ff6bcb, 0 0 80px #ff6bcb; 
+            opacity: 0; 
+            z-index: 20; 
+            pointer-events: none; 
+            white-space: nowrap; 
+            animation: pulse 3s ease-in-out infinite alternate;
         }
-        @keyframes pulse { from { text-shadow: 0 0 60px #ff6bcb; } to { text-shadow: 0 0 120px #ff6bcb; } }
-        .blessing { 
-            position: absolute; padding: 10px 20px; border-radius: 40px; font-size: 1.5rem; font-weight: 700; 
-            color: white; box-shadow: 0 0 25px rgba(255,255,255,0.5); opacity: 0; transform: scale(0); 
-            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; white-space: nowrap; 
-            text-shadow: 0 0 12px rgba(0,0,0,0.6); 
+        @keyframes pulse {
+            from { text-shadow: 0 0 40px #ff6bcb, 0 0 60px #ff6bcb; }
+            to { text-shadow: 0 0 80px #ff6bcb, 0 0 120px #ff6bcb; }
         }
-        @media (max-width: 768px) { 
-            #startText { font-size: 3.6rem; } #mainText { font-size: 2.4rem; } 
-            .blessing { font-size: 1.35rem; padding: 8px 16px; } 
+        .blessing {
+            position: absolute;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 0 25px rgba(255,255,255,0.5);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            white-space: nowrap;
+            text-shadow: 0 0 12px rgba(0,0,0,0.6);
+        }
+        @media (max-width: 768px) {
+            #startText { font-size: 3.6rem; }
+            #mainText { font-size: 2.4rem; }
+            .blessing { font-size: 1.35rem; padding: 8px 16px; }
+        }
+        @media (orientation: landscape) {
+            #startText { font-size: 3.2rem; }
+            #mainText { font-size: 2.2rem; }
+            .blessing { font-size: 1.3rem; padding: 8px 16px; }
         }
     </style>
 </head>
@@ -55,19 +93,25 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         let w, h, pixelRatio = window.devicePixelRatio || 1;
+        
         function resize() {
-            w = innerWidth; h = innerHeight;
-            canvas.width = w * pixelRatio; canvas.height = h * pixelRatio;
-            canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+            w = innerWidth;
+            h = innerHeight;
+            canvas.width = w * pixelRatio;
+            canvas.height = h * pixelRatio;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
             ctx.scale(pixelRatio, pixelRatio);
         }
-        resize(); window.addEventListener('resize', resize);
+        resize();
+        window.addEventListener('resize', resize);
 
         let fireworks = [], particles = [];
 
         class Firework {
             constructor(sx, sy, tx, ty) {
-                this.x = sx; this.y = sy; this.sx = sx; this.sy = sy;
+                this.x = sx; this.y = sy;
+                this.sx = sx; this.sy = sy;
                 this.tx = tx; this.ty = ty;
                 this.distance = Math.hypot(tx - sx, ty - sy);
                 this.travelled = 0;
@@ -95,7 +139,9 @@
                 ctx.moveTo(this.coords[this.coords.length - 1][0], this.coords[this.coords.length - 1][1]);
                 ctx.lineTo(this.x, this.y);
                 ctx.strokeStyle = `hsl(${this.hue},100%,${this.brightness}%)`;
-                ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke();
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.stroke();
             }
         }
 
@@ -107,17 +153,19 @@
                 else if (type === 2) particles.push(new RingParticle(x, y, hue));
                 else particles.push(new SpiralParticle(x, y, hue));
             }
+            // 闪星也作为普通粒子加入，直接随整体消散
             let sparkle = 20;
             while (sparkle--) particles.push(new SparkleParticle(x + Math.random() * 150 - 75, y + Math.random() * 150 - 75, hue));
         }
 
+        // 所有粒子类统一使用相同的衰减逻辑，确保全部都会消散
         class BaseParticle {
             constructor(x, y, hue) {
                 this.x = x; this.y = y;
                 this.hue = hue + Math.random() * 60 - 30;
                 this.brightness = 70 + Math.random() * 30;
                 this.alpha = 1;
-                this.decay = Math.random() * 0.01 + 0.006;
+                this.decay = Math.random() * 0.01 + 0.006; // 统一衰减范围，保证最终消失
             }
             update(i) {
                 this.alpha -= this.decay;
@@ -223,10 +271,11 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            ctx.fillStyle = 'rgba(0,0,0,0.05)';
+            ctx.fillStyle = 'rgba(0,0,0,0.05)'; // 更快淡化背景，清理残留
             ctx.fillRect(0, 0, w, h);
             fireworks.forEach((f, i) => { f.draw(); f.update(i); });
             particles.forEach((p, i) => { p.draw(); p.update(i); });
+
             if (Math.random() < 0.04) {
                 fireworks.push(new Firework(Math.random() * w, h, Math.random() * w, Math.random() * h * 0.35));
             }
@@ -263,9 +312,11 @@
 
             let index = 0;
             const total = 200;
+
             const placed = [];
             const interval = setInterval(() => {
                 if (index >= total) { clearInterval(interval); return; }
+
                 const div = document.createElement('div');
                 div.className = 'blessing';
                 div.textContent = blessings[index % blessings.length];
@@ -281,11 +332,13 @@
                 placed.push({x, y});
                 div.style.left = x + 'px';
                 div.style.top = y + 'px';
+
                 document.body.appendChild(div);
                 setTimeout(() => {
                     div.style.opacity = 1;
                     div.style.transform = 'scale(1)';
                 }, index * 60);
+
                 index++;
             }, 60);
         };
