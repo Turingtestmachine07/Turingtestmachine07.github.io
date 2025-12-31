@@ -18,7 +18,7 @@
             font-weight: 800;
             text-shadow: 0 0 40px #ff6bcb, 0 0 80px #ff6bcb; 
             opacity: 0; 
-            z-index: 20; /* 最高层，确保不被祝福气泡覆盖 */
+            z-index: 20; /* 永远在最顶层 */
             pointer-events: none; 
             white-space: nowrap; 
         }
@@ -132,7 +132,7 @@
             }
         }
 
-        // 年轻人最爱祝福语（原列表重复扩展，确保足够多）
+        // 年轻人潮流祝福语（重复扩展）
         const baseBlessings = [
             "暴富暴美","好运爆棚","事业狂飙","单身暴击","甜甜恋爱","满血复活","爆改人生","躺赢2026",
             "欧气满满","运气王者","发财密码","美貌爆表","脱单成功","升职加薪","财富自由","颜值在线",
@@ -141,8 +141,7 @@
             "清醒暴富","清醒脱单","清醒躺赢","人间清醒","帅炸全场","美翻天际","智商在线","情商拉满",
             "月月涨薪","日日开心","天天开心","年年暴富","好运加持","爱情降临","梦想成真","笑容常在"
         ];
-        // 扩展到原列表的2倍以上
-        const blessings = [...baseBlessings, ...baseBlessings, ...baseBlessings, ...baseBlessings];
+        const blessings = [...baseBlessings, ...baseBlessings, ...baseBlessings, ...baseBlessings, ...baseBlessings];
 
         const gradients = [
             "linear-gradient(135deg, #ff6b6b, #feca57)",
@@ -164,7 +163,7 @@
             animate();
 
             let index = 0;
-            const total = 300; // 直接翻倍到300个，用数量彻底填满屏幕
+            const total = 300; // 300个气泡，彻底填满
 
             const interval = setInterval(() => {
                 if(index >= total) { clearInterval(interval); return; }
@@ -173,26 +172,24 @@
                 div.className = 'blessing';
                 div.textContent = blessings[index % blessings.length];
 
-                // 随机彩色渐变边框
                 div.style.borderImage = gradients[Math.floor(Math.random()*gradients.length)] + ' 1';
 
-                // 随机环形分布
-                const angle = Math.random() * Math.PI * 2;
-                const distance = 40 + index * 3.8 + Math.random() * 120; // 更密集向外扩展
-                let x = w/2 + Math.cos(angle) * distance;
-                let y = h/2 + Math.sin(angle) * distance;
+                // 关键修改：完全随机分布，而不是环形堆积在四条线上
+                const left = Math.random() * (w - 220) + 20;  // 随机左右
+                const top = Math.random() * (h - 100) + 20;   // 随机上下
 
-                div.style.left = Math.max(20, Math.min(w-240, x)) + 'px';
-                div.style.top = Math.max(20, Math.min(h-100, y)) + 'px';
+                div.style.left = left + 'px';
+                div.style.top = top + 'px';
 
                 document.body.appendChild(div);
+
                 setTimeout(() => {
                     div.style.opacity = 1;
                     div.style.transform = 'scale(1)';
-                }, index * 50); // 更快显现
+                }, index * 50);
 
                 index++;
-            }, 50); // 更快生成
+            }, 50);
         };
     </script>
 </body>
