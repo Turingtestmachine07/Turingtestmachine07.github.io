@@ -4,12 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>点击开启你的2026</title>
+    <!-- 引入 Google Fonts 中的艺术字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Sacramento&family=Parisienne&family=Allura&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        #startScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 30; }
-        #startText { font-size: 2.9rem; text-shadow: 0 0 30px #ffd700; cursor: pointer; }
+        #startScreen { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            display: flex; align-items: center; justify-content: center; 
+            z-index: 30; 
+            cursor: pointer;
+        }
+        #startText { 
+            font-family: 'Great Vibes', cursive; /* 超级艺术手写体 */
+            font-size: 4.5rem; 
+            color: #fff;
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ff6bcb, #48dbfb, #ff9ff3);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 6s ease infinite, glowPulse 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 40px rgba(255,215,0,0.8);
+            user-select: none;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes glowPulse {
+            from { text-shadow: 0 0 40px rgba(255,215,0,0.8), 0 0 60px rgba(255,107,203,0.6); }
+            to { text-shadow: 0 0 60px rgba(255,215,0,1), 0 0 100px rgba(255,107,203,0.8); }
+        }
         #mainText { 
             position: fixed; 
             top: 50%; left: 50%; 
@@ -29,30 +60,26 @@
         }
         .blessing {
             position: absolute;
-            padding: 10px 20px; /* 缩小内边距 */
+            padding: 10px 20px;
             border-radius: 40px;
-            font-size: 1.5rem; /* 手机端更合适的字体大小 */
+            font-size: 1.5rem;
             font-weight: 700;
             color: white;
             box-shadow: 0 0 25px rgba(255,255,255,0.5);
             opacity: 0;
-            transform: scale(0); /* 取消倾斜，直接水平出现 */
+            transform: scale(0);
             transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none;
             white-space: nowrap;
             text-shadow: 0 0 12px rgba(0,0,0,0.6);
         }
-        /* 手机竖屏优化 */
         @media (max-width: 768px) {
-            #startText { font-size: 2.4rem; }
+            #startText { font-size: 3.6rem; }
             #mainText { font-size: 2.4rem; }
-            .blessing { 
-                font-size: 1.35rem; /* 手机更小，避免拥挤 */
-                padding: 8px 16px; 
-            }
+            .blessing { font-size: 1.35rem; padding: 8px 16px; }
         }
         @media (orientation: landscape) {
-            #startText { font-size: 2.2rem; }
+            #startText { font-size: 3.2rem; }
             #mainText { font-size: 2.2rem; }
             .blessing { font-size: 1.3rem; padding: 8px 16px; }
         }
@@ -71,11 +98,11 @@
         function resize() {
             w = innerWidth;
             h = innerHeight;
-            canvas.width = w * pixelRatio;  // 高分辨率画布
+            canvas.width = w * pixelRatio;
             canvas.height = h * pixelRatio;
             canvas.style.width = w + 'px';
             canvas.style.height = h + 'px';
-            ctx.scale(pixelRatio, pixelRatio); // 矢量缩放，手机高清屏清晰锐利
+            ctx.scale(pixelRatio, pixelRatio);
         }
         resize();
         window.addEventListener('resize', resize);
@@ -114,7 +141,7 @@
                 ctx.lineTo(this.x, this.y);
                 ctx.strokeStyle = `hsl(${this.hue},100%,${this.brightness}%)`;
                 ctx.lineWidth = 4;
-                ctx.lineCap = 'round'; // 圆润尾迹，更矢量感
+                ctx.lineCap = 'round';
                 ctx.stroke();
             }
         }
@@ -153,7 +180,7 @@
             }
             draw() {
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); // 小圆点，矢量清晰
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
                 ctx.fillStyle = `hsla(${this.hue},100%,${this.brightness}%,${this.alpha})`;
                 ctx.fill();
             }
@@ -233,7 +260,7 @@
         class SparkleParticle {
             constructor(x, y, hue) {
                 this.x = x; this.y = y;
-                this.size = Math.random() * 1.2 + 0.8; // 更小更精致
+                this.size = Math.random() * 1.2 + 0.8;
                 this.alpha = 0;
                 this.hue = hue;
             }
@@ -315,7 +342,7 @@
                 document.body.appendChild(div);
                 setTimeout(() => {
                     div.style.opacity = 1;
-                    div.style.transform = 'scale(1)'; // 水平弹出，无倾斜
+                    div.style.transform = 'scale(1)';
                 }, index * 60);
 
                 index++;
