@@ -145,18 +145,19 @@
             }
         }
 
+        // 爆炸后立即生成主粒子，延迟生成闪星（让主粒子先绽放1秒左右）
         function createExplosion(x, y, hue, type) {
-            let n = 100; // 减少主粒子数量，避免卡顿
+            let n = 100;
             while (n--) {
                 if (type === 0) particles.push(new ClassicParticle(x, y, hue));
                 else if (type === 1) particles.push(new HeartParticle(x, y, hue));
                 else if (type === 2) particles.push(new RingParticle(x, y, hue));
                 else particles.push(new SpiralParticle(x, y, hue));
             }
-            // 延迟1秒添加闪星（让爆炸先绽放1-2秒）
+            // 延迟1秒生成闪星粒子，并让它们也随整体渐渐消散
             setTimeout(() => {
-                let sparkle = 15; // 闪星数量少
-                while (sparkle--) particles.push(new SparkleParticle(x + Math.random() * 120 - 60, y + Math.random() * 120 - 60, hue));
+                let sparkle = 20;
+                while (sparkle--) particles.push(new SparkleParticle(x + Math.random() * 150 - 75, y + Math.random() * 150 - 75, hue));
             }, 1000);
         }
 
@@ -168,7 +169,7 @@
                 this.hue = hue + Math.random() * 60 - 30;
                 this.brightness = 70 + Math.random() * 30;
                 this.alpha = 1;
-                this.decay = Math.random() * 0.008 + 0.005; // 衰减变慢，停留更久
+                this.decay = Math.random() * 0.008 + 0.005; // 慢衰减，停留更久
                 this.friction = 0.96;
             }
             update(i) {
@@ -198,7 +199,7 @@
                 this.t += 0.1;
                 this.x = this.baseX + 16 * Math.pow(Math.sin(this.t), 3) * this.speed * 0.05;
                 this.y = this.baseY - (13 * Math.cos(this.t) - 5 * Math.cos(2 * this.t) - 2 * Math.cos(3 * this.t) - Math.cos(4 * this.t)) * this.speed * 0.05;
-                this.alpha -= 0.008; // 更慢衰减
+                this.alpha -= 0.008;
                 if (this.alpha <= 0) particles.splice(i, 1);
             }
             draw() {
@@ -257,16 +258,18 @@
             }
         }
 
+        // 闪星粒子也随整体渐渐消散（先亮起再慢慢淡出）
         class SparkleParticle {
             constructor(x, y, hue) {
                 this.x = x; this.y = y;
                 this.size = Math.random() * 1.2 + 0.8;
-                this.alpha = 0;
+                this.alpha = 0; // 从0开始淡入
                 this.hue = hue;
+                this.decay = Math.random() * 0.01 + 0.006; // 最终会慢慢消散
             }
             update(i) {
-                this.alpha += 0.1;
-                if (this.alpha > 1) this.alpha -= 0.04;
+                if (this.alpha < 1) this.alpha += 0.08; // 先快速亮起
+                this.alpha -= this.decay; // 然后慢慢消散
                 if (this.alpha <= 0) particles.splice(i, 1);
             }
             draw() {
@@ -278,13 +281,12 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            ctx.fillStyle = 'rgba(0,0,0,0.04)'; // 淡化更快，防止粒子积累卡顿
+            ctx.fillStyle = 'rgba(0,0,0,0.04)';
             ctx.fillRect(0, 0, w, h);
             fireworks.forEach((f, i) => { f.draw(); f.update(i); });
             particles.forEach((p, i) => { p.draw(); p.update(i); });
 
-            // 持续补新烟花，但控制频率，避免粒子过多
-            if (Math.random() < 0.04) { // 降低频率，保持流畅
+            if (Math.random() < 0.04) {
                 fireworks.push(new Firework(Math.random() * w, h, Math.random() * w, Math.random() * h * 0.35));
             }
         }
