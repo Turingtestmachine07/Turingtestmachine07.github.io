@@ -29,23 +29,32 @@
         }
         .blessing {
             position: absolute;
-            padding: 14px 30px;
-            border-radius: 50px;
-            font-size: 1.9rem;
-            font-weight: 800;
+            padding: 10px 20px; /* 缩小内边距 */
+            border-radius: 40px;
+            font-size: 1.5rem; /* 手机端更合适的字体大小 */
+            font-weight: 700;
             color: white;
-            box-shadow: 0 0 30px rgba(255,255,255,0.6);
+            box-shadow: 0 0 25px rgba(255,255,255,0.5);
             opacity: 0;
-            transform: scale(0) rotate(-15deg);
+            transform: scale(0); /* 取消倾斜，直接水平出现 */
             transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: none;
             white-space: nowrap;
-            text-shadow: 0 0 15px rgba(0,0,0,0.5);
+            text-shadow: 0 0 12px rgba(0,0,0,0.6);
+        }
+        /* 手机竖屏优化 */
+        @media (max-width: 768px) {
+            #startText { font-size: 2.4rem; }
+            #mainText { font-size: 2.4rem; }
+            .blessing { 
+                font-size: 1.35rem; /* 手机更小，避免拥挤 */
+                padding: 8px 16px; 
+            }
         }
         @media (orientation: landscape) {
-            #startText { font-size: 2.3rem; }
-            #mainText { font-size: 2.3rem; }
-            .blessing { font-size: 1.5rem; padding: 10px 22px; }
+            #startText { font-size: 2.2rem; }
+            #mainText { font-size: 2.2rem; }
+            .blessing { font-size: 1.3rem; padding: 8px 16px; }
         }
     </style>
 </head>
@@ -57,9 +66,19 @@
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let w, h;
-        function resize() { w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
-        resize(); window.addEventListener('resize', resize);
+        let w, h, pixelRatio = window.devicePixelRatio || 1;
+        
+        function resize() {
+            w = innerWidth;
+            h = innerHeight;
+            canvas.width = w * pixelRatio;  // 高分辨率画布
+            canvas.height = h * pixelRatio;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            ctx.scale(pixelRatio, pixelRatio); // 矢量缩放，手机高清屏清晰锐利
+        }
+        resize();
+        window.addEventListener('resize', resize);
 
         let fireworks = [], particles = [];
 
@@ -72,7 +91,7 @@
                 this.travelled = 0;
                 this.coords = [[sx, sy]]; this.coordCount = 5;
                 this.angle = Math.atan2(ty - sy, tx - sx);
-                this.speed = 4.5; // 匀速上升
+                this.speed = 4.5;
                 this.hue = Math.random() * 360;
                 this.brightness = 80 + Math.random() * 20;
                 this.type = Math.floor(Math.random() * 4);
@@ -94,20 +113,20 @@
                 ctx.moveTo(this.coords[this.coords.length - 1][0], this.coords[this.coords.length - 1][1]);
                 ctx.lineTo(this.x, this.y);
                 ctx.strokeStyle = `hsl(${this.hue},100%,${this.brightness}%)`;
-                ctx.lineWidth = 5;
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round'; // 圆润尾迹，更矢量感
                 ctx.stroke();
             }
         }
 
         function createExplosion(x, y, hue, type) {
-            let n = 120; // 主爆炸粒子数量减少，避免卡顿
+            let n = 120;
             while (n--) {
                 if (type === 0) particles.push(new ClassicParticle(x, y, hue));
                 else if (type === 1) particles.push(new HeartParticle(x, y, hue));
                 else if (type === 2) particles.push(new RingParticle(x, y, hue));
                 else particles.push(new SpiralParticle(x, y, hue));
             }
-            // 二次闪星：数量减少到20个，大小缩小到合理范围，避免卡顿
             setTimeout(() => {
                 let sparkle = 20;
                 while (sparkle--) particles.push(new SparkleParticle(x + Math.random() * 150 - 75, y + Math.random() * 150 - 75, hue));
@@ -134,7 +153,7 @@
             }
             draw() {
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); // 小圆点，矢量清晰
                 ctx.fillStyle = `hsla(${this.hue},100%,${this.brightness}%,${this.alpha})`;
                 ctx.fill();
             }
@@ -157,7 +176,7 @@
             }
             draw() {
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
                 ctx.fillStyle = `hsla(${this.hue},100%,80%,${this.alpha})`;
                 ctx.fill();
             }
@@ -180,7 +199,7 @@
             }
             draw() {
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, 1.8, 0, Math.PI * 2);
                 ctx.fillStyle = `hsla(${this.hue},100%,85%,${this.alpha})`;
                 ctx.fill();
             }
@@ -205,7 +224,7 @@
             }
             draw() {
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
                 ctx.fillStyle = `hsla(${this.hue},100%,80%,${this.alpha})`;
                 ctx.fill();
             }
@@ -214,7 +233,7 @@
         class SparkleParticle {
             constructor(x, y, hue) {
                 this.x = x; this.y = y;
-                this.size = Math.random() * 1.5 + 1; // 大幅缩小星星大小（原先太大太卡）
+                this.size = Math.random() * 1.2 + 0.8; // 更小更精致
                 this.alpha = 0;
                 this.hue = hue;
             }
@@ -224,9 +243,9 @@
                 if (this.alpha <= 0) particles.splice(i, 1);
             }
             draw() {
-                ctx.font = `${this.size * 8}px Arial`; // 缩小字体，避免巨星卡顿
+                ctx.font = `${this.size * 7}px Arial`;
                 ctx.fillStyle = `hsla(${this.hue},100%,90%,${this.alpha})`;
-                ctx.fillText("✦", this.x - 8, this.y + 8);
+                ctx.fillText("✦", this.x - 7, this.y + 7);
             }
         }
 
@@ -284,10 +303,10 @@
 
                 let x, y, attempts = 0;
                 do {
-                    x = Math.random() * (w - 240) + 30;
-                    y = Math.random() * (h - 100) + 30;
+                    x = Math.random() * (w - 200) + 30;
+                    y = Math.random() * (h - 80) + 30;
                     attempts++;
-                } while (attempts < 30 && placed.some(p => Math.hypot(p.x - x, p.y - y) < 180));
+                } while (attempts < 30 && placed.some(p => Math.hypot(p.x - x, p.y - y) < 160));
 
                 placed.push({x, y});
                 div.style.left = x + 'px';
@@ -296,7 +315,7 @@
                 document.body.appendChild(div);
                 setTimeout(() => {
                     div.style.opacity = 1;
-                    div.style.transform = 'scale(1) rotate(8deg)';
+                    div.style.transform = 'scale(1)'; // 水平弹出，无倾斜
                 }, index * 60);
 
                 index++;
